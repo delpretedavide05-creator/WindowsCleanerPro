@@ -249,4 +249,1663 @@
         </div>
 
         <!-- EMPTY STATE -->
-        <div id="emptyState" class="hidden text-center
+        <div id="emptyState" class="hidden text-center py-16 bg-white rounded-2xl border border-slate-200">
+            <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">
+                <i class="fa-solid fa-store-slash"></i>
+            </div>
+            <h3 class="font-bold text-slate-700 text-base">Nessun cliente trovato</h3>
+            <p class="text-xs text-slate-400 mt-1">Prova a cambiare filtro o termine di ricerca.</p>
+        </div>
+
+    </main>
+
+    <!-- QUICK DAILY REGISTRATION MODAL -->
+    <div id="quickDailyModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200">
+        <div class="bg-white rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl transform transition-all scale-95 max-h-[90vh] flex flex-col" id="quickModalContainer">
+            <div class="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 py-4 flex justify-between items-center flex-shrink-0">
+                <h3 class="font-bold text-base flex items-center gap-2">
+                    <i class="fa-solid fa-bolt text-yellow-200"></i> Registrazione Rapida Giornata
+                </h3>
+                <button onclick="closeQuickDailyModal()" class="text-white/80 hover:text-white text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Tab selector inside modal -->
+            <div class="bg-slate-100 p-2 flex gap-2 border-b border-slate-200 flex-shrink-0">
+                <button id="quickTabSingleBtn" onclick="switchQuickTab('single')" class="flex-1 py-2 text-xs font-bold rounded-xl bg-white text-slate-800 shadow-sm transition flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-store"></i> Negozio Singolo
+                </button>
+                <button id="quickTabBatchBtn" onclick="switchQuickTab('batch')" class="flex-1 py-2 text-xs font-bold rounded-xl text-slate-500 hover:text-slate-800 transition flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-list-check"></i> Spunta Massiva Negozi
+                </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto flex-1 space-y-4">
+                
+                <!-- SINGLE ENTRY TAB -->
+                <form id="quickSingleForm" onsubmit="saveQuickDaily(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Seleziona Negozio / Cliente *</label>
+                        <select id="quickClientSelect" onchange="onQuickClientChange()" required class="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none bg-slate-50">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                        <label class="flex items-center space-x-3 cursor-pointer p-2 rounded-lg bg-white border border-slate-200 hover:border-amber-400 transition">
+                            <input type="checkbox" id="quickWorkDone" checked class="w-4 h-4 text-amber-600 rounded focus:ring-amber-500">
+                            <span class="text-xs font-bold text-slate-700 flex items-center gap-1">
+                                <i class="fa-solid fa-spray-can text-sky-500"></i> Pulizia / Lavaggio Eseguito
+                            </span>
+                        </label>
+
+                        <label class="flex items-center space-x-3 cursor-pointer p-2 rounded-lg bg-white border border-slate-200 hover:border-emerald-400 transition">
+                            <input type="checkbox" id="quickPaid" checked class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500">
+                            <span class="text-xs font-bold text-slate-700 flex items-center gap-1">
+                                <i class="fa-solid fa-hand-holding-dollar text-emerald-500"></i> Pagamento Incassato (Cancella note)
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Prezzo / Importo (€)</label>
+                            <input type="number" id="quickPrice" step="5" min="0" placeholder="0" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Data Registrazione</label>
+                            <input type="date" id="quickDate" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Note Opzionali</label>
+                        <input type="text" id="quickNotes" placeholder="Es. Da pagare il 18, ripassare..." class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    </div>
+
+                    <div class="pt-3 flex justify-end gap-2 border-t border-slate-100">
+                        <button type="button" onclick="closeQuickDailyModal()" class="px-4 py-2 bg-slate-100 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-200">Annulla</button>
+                        <button type="submit" class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold rounded-xl shadow-md transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-check"></i> Salva Registrazione
+                        </button>
+                    </div>
+                </form>
+
+                <!-- BATCH SPUNTA MASSIVA TAB -->
+                <div id="quickBatchSection" class="hidden space-y-3">
+                    <p class="text-xs text-slate-500">Metti la spunta a tutti i negozi che hai pulito o che ti hanno pagato oggi, poi premi "Applica":</p>
+                    
+                    <div id="batchClientsList" class="max-h-[50vh] overflow-y-auto space-y-2 pr-1">
+                        <!-- Populated dynamically -->
+                    </div>
+
+                    <div class="pt-3 flex justify-end gap-2 border-t border-slate-100">
+                        <button type="button" onclick="closeQuickDailyModal()" class="px-4 py-2 bg-slate-100 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-200">Annulla</button>
+                        <button type="button" onclick="applyBatchQuickDaily()" class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold rounded-xl shadow-md transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-layer-group"></i> Applica Registrazioni Selezionate
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ADD / EDIT CLIENT MODAL -->
+    <div id="clientModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200">
+        <div class="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl transform transition-all scale-95" id="modalContainer">
+            <div class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center">
+                <h3 id="modalTitle" class="font-bold text-base flex items-center gap-2">
+                    <i class="fa-solid fa-shop text-sky-400"></i> Scheda Cliente
+                </h3>
+                <button onclick="closeClientModal()" class="text-slate-400 hover:text-white text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="clientForm" onsubmit="saveClient(event)" class="p-6 space-y-4">
+                <input type="hidden" id="clientId">
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Nome Negozio / Cliente *</label>
+                    <input type="text" id="clientName" required placeholder="Es. Bar Centrale" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Prezzo (€) *</label>
+                        <input type="number" id="clientPrice" step="5" min="0" required placeholder="40" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Stato Attuale</label>
+                        <select id="clientStatus" onchange="onModalStatusChange()" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                            <option value="PAGATO">PAGATO (Regolare)</option>
+                            <option value="DA_PAGARE">DA PAGARE (In Sospeso)</option>
+                            <option value="ATTESA_2A">Ciclo in Corso (1ª/2ª/3ª fatta)</option>
+                            <option value="IN_RITARDO">IN RITARDO</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Frequenza Pagamento</label>
+                        <select id="clientFrequency" onchange="onModalFrequencyChange()" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                            <option value="Ogni 2 prestazioni">Ogni 2 prestazioni (Alternato)</option>
+                            <option value="Ogni 4 settimane">Ogni 4 settimane (Settimanale)</option>
+                            <option value="Mensile - Primo Lunedì">Mensile - Primo Lunedì</option>
+                            <option value="Mensile - Primo Martedì">Mensile - Primo Martedì</option>
+                            <option value="Mensile - Ultimo Martedì">Mensile - Ultimo Martedì</option>
+                            <option value="Mensile - Ultimo Venerdì">Mensile - Ultimo Venerdì</option>
+                            <option value="Mensile - Ultimo del mese">Mensile - Ultimo del mese</option>
+                            <option value="Ogni prestazione">Ogni prestazione</option>
+                            <option value="Saltuario">Saltuario</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Prestaz. Fatte nel Ciclo</label>
+                        <select id="clientServicesDone" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                            <option value="0">0 (Appena saldato)</option>
+                            <option value="1">1 prestazione fatta</option>
+                            <option value="2">2 prestazioni fatte</option>
+                            <option value="3">3 prestazioni fatte</option>
+                            <option value="4">4 prestazioni fatte (Da pagare)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Ultima Prestazione</label>
+                        <input type="date" id="clientLastService" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Ultimo Pagamento</label>
+                        <input type="date" id="clientLastPayment" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Note Personali (es. "Da pagare il 18")</label>
+                    <textarea id="clientNotes" rows="2" placeholder="Es. Da pagare il 18, In ritardo..." class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:outline-none"></textarea>
+                </div>
+
+                <div class="pt-3 flex justify-between items-center border-t border-slate-100">
+                    <button type="button" id="deleteClientBtn" onclick="askDeleteConfirmation()" class="text-rose-600 hover:text-rose-700 text-xs font-semibold flex items-center gap-1">
+                        <i class="fa-solid fa-trash"></i> Elimina Cliente
+                    </button>
+                    <div class="flex gap-2">
+                        <button type="button" onclick="closeClientModal()" class="px-4 py-2 bg-slate-100 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-200">Annulla</button>
+                        <button type="submit" class="px-5 py-2 bg-sky-600 text-white text-sm font-semibold rounded-xl hover:bg-sky-700 shadow-md">Salva</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- CUSTOM CONFIRMATION MODAL -->
+    <div id="confirmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl transform transition-all scale-95" id="confirmModalContainer">
+            <div id="confirmModalIcon" class="w-12 h-12 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-3 text-xl">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 id="confirmModalTitle" class="font-bold text-slate-900 text-base mb-1">Sei sicuro?</h3>
+            <p id="confirmModalText" class="text-xs text-slate-500 mb-5">Questa operazione modificherà i dati salvati.</p>
+            <div class="flex gap-2 justify-center">
+                <button type="button" onclick="closeConfirmModal()" class="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-semibold rounded-xl hover:bg-slate-200 transition flex-1">Annulla</button>
+                <button type="button" id="confirmModalActionBtn" class="px-4 py-2 bg-rose-600 text-white text-xs font-semibold rounded-xl hover:bg-rose-700 transition flex-1">Conferma</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CLOUD CONFIGURATION MODAL -->
+    <div id="cloudModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200">
+        <div class="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl transform transition-all scale-95" id="cloudModalContainer">
+            <div class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center">
+                <h3 class="font-bold text-base flex items-center gap-2">
+                    <i class="fa-solid fa-cloud text-sky-400"></i> Configurazione Cloud Sincronizzato
+                </h3>
+                <button onclick="closeCloudModal()" class="text-slate-400 hover:text-white text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-xs text-slate-600 leading-relaxed">
+                    Quando apri il file dall'app <b>Documents</b> o da Safari, i dati rimangono salvati nella memoria dell'iPhone.<br><br>
+                    Se vuoi che i dati si <b>sincronizzino automaticamente online</b> su qualsiasi dispositivo, incolla qui sotto il codice di configurazione Firebase (JSON):
+                </p>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Configurazione Firebase (JSON)</label>
+                    <textarea id="firebaseConfigInput" rows="5" placeholder='{"apiKey": "...", "authDomain": "...", "projectId": "..."}' class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-mono focus:ring-2 focus:ring-sky-500 focus:outline-none bg-slate-50"></textarea>
+                </div>
+                <div class="flex gap-2 justify-end pt-2 border-t border-slate-100">
+                    <button type="button" onclick="resetCloudConfig()" class="px-3 py-2 text-rose-600 hover:bg-rose-50 rounded-xl text-xs font-semibold">Usa Solo Locale</button>
+                    <button type="button" onclick="saveCloudConfig()" class="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold rounded-xl shadow transition">Connetti Cloud</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION BANNER -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <span id="toastIcon" class="text-emerald-400 text-lg"><i class="fa-solid fa-circle-check"></i></span>
+        <span id="toastMessage" class="text-sm font-medium">Operazione completata!</span>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, deleteDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'vetriclean-pro-app';
+        const DATA_VERSION = 'v3_screenshots_2026_11_14';
+        let db = null;
+        let auth = null;
+        let isCloudActive = false;
+
+        // DATI AGGIORNATI DAGLI SCREENSHOT (Calcolati su date reali di lavaggio, incasso e note)
+        const INITIAL_NUMBERS_DATA = [
+            { id: 1, name: 'Bebe', price: 200, frequency: 'Mensile - Primo Lunedì', lastService: '2026-11-09', lastPayment: '2026-11-02', status: 'PAGATO', servicesDone: 0, skipWeeks: 0, notes: '' },
+            { id: 2, name: 'Meka Arredamenti', price: 50, frequency: 'Mensile - Primo Lunedì', lastService: '2026-11-02', lastPayment: '2026-11-02', status: 'PAGATO', servicesDone: 0, skipWeeks: 0, notes: '' },
+            { id: 3, name: 'Cirdec', price: 65, frequency: 'Mensile - Primo Lunedì', lastService: '2026-11-03', lastPayment: '2026-11-03', status: 'PAGATO', servicesDone: 0, skipWeeks: 0, notes: '' },
+            { id: 4, name: 'Profumeria', price: 40, frequency: 'Ogni 2 prestazioni', lastService: '2026-09-28', lastPayment: '2026-09-14', status: 'PAGATO', servicesDone: 0, skipWeeks: 0, notes: '' },
+            { id: 5, name: 'Balestrieri', price: 50, frequency: 'Mensile - Primo Martedì', lastService: '2026-11-03', lastPayment: '2026-11-03', status: 'PAGATO', servicesDone: 0, skipWeeks: 0, notes: '' },
+            { id: 6, name: 'De Robbio', price: 60, frequency: 'Mensile - Ultimo Martedì', lastService: '2026-03-18', lastPayment: '2026-09-08', status: 'PAGATO', servicesDone: 0, skipWeeks: 0, notes: '' },
+            { id: 7, name: 'De Rosa', price: 50, frequency: 'Ogni 2 prestazioni', lastService: '2026-11-10', lastPayment: '2026-11-10', status: 'IN_RITARDO', servicesDone: 2, skipWeeks: 0, notes: 'In ritardo, deve ancora pagare' },
+            { id: 8, name: '0.0', price: 80, frequency: 'Ogni 4 settimane', lastService: '2026-10-14', lastPayment: '2026-10-22', status: 'PAGATO', servicesDone: 0, skipWeeks: 0, notes: '' },
+            { id: 9, name: 'Pocho', price: 40, frequency: 'Ogni 2 prestazioni', lastService: '2026-09-16', lastPayment: '2026-09-04', status: 'PAGATO', servicesDone: 0, skipWeeks: 0, notes: '' },
+            { id: 10, name: 'Esposito', price: 40, frequency: 'Ogni 2 prestazioni', lastService: '2026-11-04', lastPayment: '2026-10-14', status: 'ATTESA_2A', servicesDone: 1, skipWeeks: 0, notes: '' },
+            { id: 11, name: 'Lorenzino', price: 35, frequency: 'Ogni 2 prestazioni', lastService: '2026-11-04', lastPayment: '2026-10-16', status: 'ATTESA_2A', servicesDone: 1, skipWeeks: 0, notes: '' },
+            { id: 12, name: 'Bar', price: 30, frequency: 'Ogni 2 prestazioni', lastService: '2026-07-22', lastPayment: '2026-07-22', status: 'PAGATO', servicesDone: 0, skipWeeks: 0, notes: '' },
+            { id: 13, name: 'Meccanico Gianfranco', price: 50, frequency: 'Ogni 2 prestazioni', lastService: '2026-11-06', lastPayment: '2026-10-16', status: 'ATTESA_2A', servicesDone: 1, skipWeeks: 0, notes: '' },
+            { id: 14, name: 'Farmacia', price: 30, frequency: 'Ogni 2 prestazioni', lastService: '2026-11-06', lastPayment: '2026-10-16', status: 'ATTESA_2A', servicesDone: 1, skipWeeks: 0, notes: '' },
+            { id: 15, name: 'Negozio Telefoni', price: 20, frequency: 'Saltuario', lastService: '2026-11-13', lastPayment: '2026-11-13', status: 'PAGATO', servicesDone: 0, skipWeeks: 0, notes: '' },
+            { id: 16, name: 'Palestra', price: 50, frequency: 'Saltuario', lastService: '2026-03-11', lastPayment: '', status: 'IN_RITARDO', servicesDone: 1, skipWeeks: 0, notes: 'In ritardo' },
+            { id: 17, name: 'Il Gatto e la Volpe', price: 30, frequency: 'Ogni 2 prestazioni', lastService: '2026-11-06', lastPayment: '2026-11-06', status: 'PAGATO', servicesDone: 0, skipWeeks: 0, notes: '' },
+            { id: 18, name: 'Pasticceria Sant\'antimo', price: 60, frequency: 'Ogni 4 settimane', lastService: '2026-10-23', lastPayment: '2026-10-23', status: 'PAGATO', servicesDone: 0, skipWeeks: 0, notes: '' },
+            { id: 19, name: 'Gioielleria', price: 40, frequency: 'Ogni 4 settimane', lastService: '2026-11-06', lastPayment: '2026-11-06', status: 'PAGATO', servicesDone: 0, skipWeeks: 0, notes: '' },
+            { id: 20, name: 'Ernonno boutique', price: 80, frequency: 'Ogni 4 settimane', lastService: '2026-11-13', lastPayment: '2026-11-06', status: 'ATTESA_2A', servicesDone: 1, skipWeeks: 0, notes: '' },
+            { id: 21, name: 'Atelier', price: 80, frequency: 'Mensile - Ultimo Venerdì', lastService: '2026-11-06', lastPayment: '2026-11-06', status: 'PAGATO', servicesDone: 0, skipWeeks: 0, notes: '' },
+            { id: 22, name: 'Livein', price: 80, frequency: 'Ogni 2 prestazioni', lastService: '2026-11-09', lastPayment: '2026-11-09', status: 'PAGATO', servicesDone: 0, skipWeeks: 0, notes: '' },
+            { id: 23, name: 'Officina', price: 80, frequency: 'Ogni 4 settimane', lastService: '2026-10-16', lastPayment: '2026-09-25', status: 'ATTESA_2A', servicesDone: 3, skipWeeks: 0, notes: '' },
+            { id: 24, name: 'Arketipo', price: 25, frequency: 'Ogni 2 prestazioni', lastService: '2026-05-06', lastPayment: '2026-05-06', status: 'PAGATO', servicesDone: 0, skipWeeks: 0, notes: '' },
+            { id: 25, name: 'Mon Amour', price: 60, frequency: 'Ogni 4 settimane', lastService: '2026-11-12', lastPayment: '2026-10-15', status: 'DA_PAGARE', servicesDone: 4, skipWeeks: 0, notes: '' },
+            { id: 26, name: 'Vitmar', price: 25, frequency: 'Ogni 2 prestazioni', lastService: '2026-10-01', lastPayment: '2026-09-16', status: 'ATTESA_2A', servicesDone: 1, skipWeeks: 0, notes: '' },
+            { id: 27, name: 'De Robbio 2', price: 50, frequency: 'Mensile - Ultimo del mese', lastService: '2026-11-12', lastPayment: '2026-11-12', status: 'IN_RITARDO', servicesDone: 1, skipWeeks: 0, notes: 'In ritardo, deve ancora pagare' },
+            { id: 28, name: 'Nails', price: 40, frequency: 'Ogni 4 settimane', lastService: '2026-11-12', lastPayment: '2026-10-22', status: 'ATTESA_2A', servicesDone: 3, skipWeeks: 0, notes: '' },
+            { id: 29, name: 'Moto', price: 35, frequency: 'Ogni 4 settimane', lastService: '2026-11-03', lastPayment: '2026-11-03', status: 'PAGATO', servicesDone: 0, skipWeeks: 0, notes: '' },
+            { id: 30, name: 'Ottica', price: 35, frequency: 'Ogni 4 settimane', lastService: '2026-11-12', lastPayment: '2026-10-01', status: 'IN_RITARDO', servicesDone: 4, skipWeeks: 0, notes: 'In ritardo' },
+            { id: 31, name: 'Saronni', price: 100, frequency: 'Ogni 4 settimane', lastService: '2026-08-27', lastPayment: '2026-09-10', status: 'PAGATO', servicesDone: 0, skipWeeks: 0, notes: '' },
+            { id: 32, name: 'Outlet', price: 30, frequency: 'Ogni 4 settimane', lastService: '2026-06-26', lastPayment: '2026-09-25', status: 'PAGATO', servicesDone: 0, skipWeeks: 0, notes: '' },
+            { id: 33, name: 'Gemelli', price: 15, frequency: 'Ogni prestazione', lastService: '2026-11-13', lastPayment: '2026-11-13', status: 'PAGATO', servicesDone: 0, skipWeeks: 0, notes: '' },
+            { id: 34, name: 'Pasticceria piccola', price: 50, frequency: 'Ogni 4 settimane', lastService: '2026-11-12', lastPayment: '2026-11-05', status: 'ATTESA_2A', servicesDone: 1, skipWeeks: 0, notes: '' },
+            { id: 35, name: 'Pasticceria Grande', price: 60, frequency: 'Ogni 2 prestazioni', lastService: '2026-08-13', lastPayment: '2026-08-13', status: 'PAGATO', servicesDone: 0, skipWeeks: 0, notes: '' },
+            { id: 36, name: 'Sapureat', price: 80, frequency: 'Ogni 4 settimane', lastService: '2026-07-09', lastPayment: '2026-09-03', status: 'DA_PAGARE', servicesDone: 4, skipWeeks: 0, notes: 'Da pagare il 4' },
+            { id: 37, name: 'Malcom', price: 30, frequency: 'Ogni 2 prestazioni', lastService: '2026-11-05', lastPayment: '2026-11-05', status: 'PAGATO', servicesDone: 0, skipWeeks: 0, notes: '' },
+            { id: 38, name: 'Fioraio', price: 20, frequency: 'Ogni 2 prestazioni', lastService: '2026-10-01', lastPayment: '2026-09-17', status: 'ATTESA_2A', servicesDone: 1, skipWeeks: 0, notes: '' },
+            { id: 39, name: 'Fimiani Motors', price: 40, frequency: 'Ogni 2 prestazioni', lastService: '2026-11-03', lastPayment: '2026-11-03', status: 'PAGATO', servicesDone: 0, skipWeeks: 0, notes: '' },
+            { id: 40, name: 'Palazzo signora', price: 10, frequency: 'Ogni prestazione', lastService: '', lastPayment: '', status: 'PAGATO', servicesDone: 0, skipWeeks: 0, notes: '' }
+        ];
+
+        let clients = [];
+        let activeFilter = 'ALL';
+        let pendingConfirmAction = null;
+        let reminderWeekOffset = 0;
+
+        function getTodayISO() {
+            const d = new Date();
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function parseLocalDate(dateStr) {
+            if (!dateStr) return null;
+            const [y, m, d] = dateStr.split('-').map(Number);
+            if (!y || !m || !d) return null;
+            return new Date(y, m - 1, d, 12, 0, 0);
+        }
+
+        function getStartOfWeek(dateObj) {
+            const d = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), 12, 0, 0);
+            const day = d.getDay();
+            const diff = day === 0 ? -6 : 1 - day;
+            d.setDate(d.getDate() + diff);
+            return d;
+        }
+
+        function getEndOfWeek(mondayDate) {
+            const d = new Date(mondayDate);
+            d.setDate(d.getDate() + 6);
+            return d;
+        }
+
+        function addDays(dateObj, days) {
+            const d = new Date(dateObj);
+            d.setDate(d.getDate() + days);
+            return d;
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const parts = dateStr.split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            return dateStr;
+        }
+
+        function formatShortDate(dateObj) {
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            return `${day}/${month}`;
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // MOTORE CALCOLO SETTIMANA PREVISTA PER IL PAGAMENTO
+        function getClientPaymentForecast(client) {
+            const today = new Date();
+            const currentMonday = getStartOfWeek(today);
+            const skipOffsetDays = (Number(client.skipWeeks) || 0) * 7;
+
+            if (client.status === 'IN_RITARDO') {
+                return {
+                    targetMonday: addDays(currentMonday, skipOffsetDays),
+                    reason: client.notes ? `Ritardo (${client.notes})` : 'Pagamento in ritardo',
+                    isUrgent: true,
+                    weeksRemaining: Number(client.skipWeeks) || 0
+                };
+            }
+
+            if (client.status === 'DA_PAGARE') {
+                if (client.notes) {
+                    const dayMatch = client.notes.match(/(?:il|giorno|pagare\s+il)\s*(\d{1,2})\b/i);
+                    if (dayMatch) {
+                        const targetDay = parseInt(dayMatch[1], 10);
+                        if (targetDay >= 1 && targetDay <= 31) {
+                            let candidate = new Date(today.getFullYear(), today.getMonth(), targetDay, 12, 0, 0);
+                            if (candidate < addDays(currentMonday, -7)) {
+                                candidate = new Date(today.getFullYear(), today.getMonth() + 1, targetDay, 12, 0, 0);
+                            }
+                            let mond = getStartOfWeek(candidate);
+                            if (mond < currentMonday) mond = currentMonday;
+                            const finalMond = addDays(mond, skipOffsetDays);
+                            const diffW = Math.round((finalMond - currentMonday) / (7 * 24 * 60 * 60 * 1000));
+                            return {
+                                targetMonday: finalMond,
+                                reason: `Nota: "${client.notes}"`,
+                                isUrgent: diffW <= 0,
+                                weeksRemaining: Math.max(0, diffW)
+                            };
+                        }
+                    }
+                }
+                return {
+                    targetMonday: addDays(currentMonday, skipOffsetDays),
+                    reason: client.notes ? `Da incassare (${client.notes})` : 'Ciclo completato - Da incassare',
+                    isUrgent: true,
+                    weeksRemaining: Number(client.skipWeeks) || 0
+                };
+            }
+
+            if (client.notes) {
+                const dayMatch = client.notes.match(/(?:il|giorno|pagare\s+il)\s*(\d{1,2})\b/i);
+                if (dayMatch) {
+                    const targetDay = parseInt(dayMatch[1], 10);
+                    if (targetDay >= 1 && targetDay <= 31) {
+                        let candidate = new Date(today.getFullYear(), today.getMonth(), targetDay, 12, 0, 0);
+                        if (candidate < currentMonday) {
+                            candidate = new Date(today.getFullYear(), today.getMonth() + 1, targetDay, 12, 0, 0);
+                        }
+                        const finalMond = addDays(getStartOfWeek(candidate), skipOffsetDays);
+                        const diffW = Math.round((finalMond - currentMonday) / (7 * 24 * 60 * 60 * 1000));
+                        return {
+                            targetMonday: finalMond,
+                            reason: `Scadenza nota: giorno ${targetDay}`,
+                            isUrgent: diffW <= 0,
+                            weeksRemaining: Math.max(0, diffW)
+                        };
+                    }
+                }
+            }
+
+            const baseDate = parseLocalDate(client.lastService) || parseLocalDate(client.lastPayment);
+
+            if (client.frequency.includes('Ogni 2')) {
+                const done = client.status === 'ATTESA_2A' ? 1 : (Number(client.servicesDone) || 0);
+                const missing = Math.max(1, 2 - done);
+                const weeksToAdd = missing * 2;
+                let baseMonday = baseDate ? getStartOfWeek(baseDate) : currentMonday;
+                let predictedMonday = addDays(baseMonday, weeksToAdd * 7 + skipOffsetDays);
+                if (predictedMonday < currentMonday) {
+                    predictedMonday = addDays(currentMonday, skipOffsetDays);
+                }
+                const diffW = Math.round((predictedMonday - currentMonday) / (7 * 24 * 60 * 60 * 1000));
+                return {
+                    targetMonday: predictedMonday,
+                    reason: done === 1 ? '2ª prestazione (settimane alterne)' : 'Ciclo 2 prestazioni (ogni 4 sett.)',
+                    isUrgent: diffW <= 0,
+                    weeksRemaining: Math.max(0, diffW)
+                };
+            }
+
+            if (client.frequency.includes('Ogni 4')) {
+                const done = Number(client.servicesDone) || 0;
+                const missing = Math.max(1, 4 - done);
+                let baseMonday = baseDate ? getStartOfWeek(baseDate) : currentMonday;
+                let predictedMonday = addDays(baseMonday, missing * 7 + skipOffsetDays);
+                if (predictedMonday < currentMonday) {
+                    predictedMonday = addDays(currentMonday, skipOffsetDays);
+                }
+                const diffW = Math.round((predictedMonday - currentMonday) / (7 * 24 * 60 * 60 * 1000));
+                return {
+                    targetMonday: predictedMonday,
+                    reason: done > 0 ? `Manca ${missing}ª prestaz. su 4` : 'Ciclo 4 settimane',
+                    isUrgent: diffW <= 0,
+                    weeksRemaining: Math.max(0, diffW)
+                };
+            }
+
+            if (client.frequency.startsWith('Mensile')) {
+                let targetMonth = today.getMonth();
+                let targetYear = today.getFullYear();
+                const lastPayDate = parseLocalDate(client.lastPayment);
+                if (lastPayDate && lastPayDate.getMonth() === targetMonth && lastPayDate.getFullYear() === targetYear) {
+                    targetMonth += 1;
+                    if (targetMonth > 11) {
+                        targetMonth = 0;
+                        targetYear += 1;
+                    }
+                }
+                const monthlyDate = getMonthlyRuleDate(client.frequency, targetYear, targetMonth);
+                let predictedMonday = getStartOfWeek(monthlyDate);
+                if (predictedMonday < currentMonday) {
+                    predictedMonday = currentMonday;
+                }
+                predictedMonday = addDays(predictedMonday, skipOffsetDays);
+                const diffW = Math.round((predictedMonday - currentMonday) / (7 * 24 * 60 * 60 * 1000));
+                return {
+                    targetMonday: predictedMonday,
+                    reason: client.frequency.replace('Mensile - ', 'Mensile: '),
+                    isUrgent: diffW <= 0,
+                    weeksRemaining: Math.max(0, diffW)
+                };
+            }
+
+            if (client.frequency === 'Ogni prestazione') {
+                const predictedMonday = addDays(currentMonday, skipOffsetDays);
+                return {
+                    targetMonday: predictedMonday,
+                    reason: 'Ad ogni lavaggio',
+                    isUrgent: skipOffsetDays === 0,
+                    weeksRemaining: Number(client.skipWeeks) || 0
+                };
+            }
+
+            return {
+                targetMonday: null,
+                reason: 'Saltuario',
+                isUrgent: false,
+                weeksRemaining: null
+            };
+        }
+
+        function getMonthlyRuleDate(freq, year, month) {
+            if (freq.includes('Primo Lunedì')) return getNthWeekdayOfMonth(year, month, 1, 1);
+            if (freq.includes('Primo Martedì')) return getNthWeekdayOfMonth(year, month, 2, 1);
+            if (freq.includes('Ultimo Martedì')) return getLastWeekdayOfMonth(year, month, 2);
+            if (freq.includes('Ultimo Venerdì')) return getLastWeekdayOfMonth(year, month, 5);
+            return new Date(year, month + 1, 0, 12, 0, 0);
+        }
+
+        function getNthWeekdayOfMonth(year, month, weekday, n) {
+            const firstDay = new Date(year, month, 1, 12, 0, 0);
+            const diff = (weekday - firstDay.getDay() + 7) % 7;
+            return new Date(year, month, 1 + diff + (n - 1) * 7, 12, 0, 0);
+        }
+
+        function getLastWeekdayOfMonth(year, month, weekday) {
+            const lastDay = new Date(year, month + 1, 0, 12, 0, 0);
+            const diff = (lastDay.getDay() - weekday + 7) % 7;
+            return new Date(year, month, lastDay.getDate() - diff, 12, 0, 0);
+        }
+
+        function renderWeeklyReminders() {
+            const container = document.getElementById('weeklyReminderList');
+            const titleEl = document.getElementById('weeklyReminderTitle');
+            const rangeEl = document.getElementById('weeklyReminderRange');
+            const totalEl = document.getElementById('weeklyTotalAmount');
+
+            const today = new Date();
+            const currentMonday = getStartOfWeek(today);
+            const selectedMonday = addDays(currentMonday, reminderWeekOffset * 7);
+            const selectedSunday = getEndOfWeek(selectedMonday);
+
+            if (reminderWeekOffset === 0) {
+                titleEl.innerText = 'Pagamenti Previsti Questa Settimana';
+            } else if (reminderWeekOffset === 1) {
+                titleEl.innerText = 'Pagamenti Previsti Settimana Prossima';
+            } else if (reminderWeekOffset > 1) {
+                titleEl.innerText = `Pagamenti Previsti tra ${reminderWeekOffset} Settimane`;
+            } else {
+                titleEl.innerText = `Settimana Passata (${Math.abs(reminderWeekOffset)} sett. fa)`;
+            }
+
+            rangeEl.innerText = `Dal ${formatShortDate(selectedMonday)} al ${formatShortDate(selectedSunday)}`;
+
+            const dueClients = [];
+            clients.forEach(c => {
+                const forecast = getClientPaymentForecast(c);
+                if (!forecast.targetMonday) return;
+                const isSameWeek = forecast.targetMonday.getTime() === selectedMonday.getTime();
+                const isOverdueOnCurrent = reminderWeekOffset === 0 && forecast.targetMonday < selectedMonday;
+                if (isSameWeek || isOverdueOnCurrent) {
+                    dueClients.push({ client: c, forecast });
+                }
+            });
+
+            dueClients.sort((a, b) => {
+                if (a.client.status === 'IN_RITARDO' && b.client.status !== 'IN_RITARDO') return -1;
+                if (b.client.status === 'IN_RITARDO' && a.client.status !== 'IN_RITARDO') return 1;
+                if (a.client.status === 'DA_PAGARE' && b.client.status !== 'DA_PAGARE') return -1;
+                if (b.client.status === 'DA_PAGARE' && a.client.status !== 'DA_PAGARE') return 1;
+                return a.client.name.localeCompare(b.client.name);
+            });
+
+            const totalWeek = dueClients.reduce((sum, item) => sum + (Number(item.client.price) || 0), 0);
+            totalEl.innerText = `€ ${totalWeek}`;
+
+            if (dueClients.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-6 text-slate-400 text-xs bg-slate-50/70 rounded-xl border border-dashed border-slate-200">
+                        <i class="fa-solid fa-calendar-xmark text-lg mb-1 block text-slate-300"></i>
+                        Nessun pagamento previsto in questa settimana. Usa le frecce in alto per controllare le prossime settimane.
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            dueClients.forEach(({ client, forecast }) => {
+                const isLate = client.status === 'IN_RITARDO';
+                const isReadyToPay = client.status === 'DA_PAGARE';
+                const boxStyle = isLate
+                    ? 'border-rose-300 bg-rose-50/60'
+                    : (isReadyToPay ? 'border-amber-300 bg-amber-50/60' : 'border-sky-200 bg-sky-50/40');
+                const badgeStyle = isLate
+                    ? 'bg-rose-100 text-rose-800'
+                    : (isReadyToPay ? 'bg-amber-100 text-amber-800' : 'bg-sky-100 text-sky-800');
+
+                html += `
+                <div class="rounded-xl p-3 border ${boxStyle} flex flex-col justify-between gap-2.5 transition">
+                    <div class="flex items-start justify-between gap-2">
+                        <div>
+                            <div class="font-bold text-slate-900 text-sm leading-tight">${escapeHtml(client.name)}</div>
+                            <span class="inline-block mt-1 px-2 py-0.5 rounded-md text-[10px] font-semibold ${badgeStyle}">
+                                ${escapeHtml(forecast.reason)}
+                            </span>
+                        </div>
+                        <span class="font-extrabold text-slate-900 text-base">€${client.price}</span>
+                    </div>
+
+                    <div class="flex items-center gap-1.5 pt-1 border-t border-slate-200/60">
+                        <button onclick="registerPayment(${client.id})" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold py-1.5 px-2 rounded-lg transition flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-check"></i> Incassa
+                        </button>
+                        <button onclick="skipClientWeek(${client.id})" title="Hai saltato il negozio? Sposta l'avviso alla prossima settimana" class="bg-white hover:bg-amber-50 text-amber-700 border border-amber-300 text-[11px] font-semibold py-1.5 px-2.5 rounded-lg transition flex items-center gap-1">
+                            <i class="fa-solid fa-forward"></i> +1 Sett
+                        </button>
+                    </div>
+                </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function changeReminderWeek(delta) {
+            reminderWeekOffset += delta;
+            renderWeeklyReminders();
+        }
+
+        function resetReminderWeek() {
+            reminderWeekOffset = 0;
+            renderWeeklyReminders();
+        }
+
+        function skipClientWeek(clientId) {
+            const client = clients.find(c => c.id === clientId);
+            if (!client) return;
+            client.skipWeeks = (Number(client.skipWeeks) || 0) + 1;
+            saveToLocalStorage();
+            syncClientToCloud(client);
+            renderClients();
+            showToast(`Avviso per <b>${escapeHtml(client.name)}</b> spostato alla settimana successiva!`, 'amber');
+        }
+
+        function showToast(message, type = 'emerald') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toastIcon');
+            const msg = document.getElementById('toastMessage');
+
+            msg.innerHTML = message;
+
+            if (type === 'emerald') {
+                icon.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-400"></i>';
+            } else if (type === 'amber') {
+                icon.innerHTML = '<i class="fa-solid fa-bell text-amber-400"></i>';
+            } else if (type === 'rose') {
+                icon.innerHTML = '<i class="fa-solid fa-circle-exclamation text-rose-400"></i>';
+            } else {
+                icon.innerHTML = '<i class="fa-solid fa-info-circle text-sky-400"></i>';
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+
+        function renderClients() {
+            const grid = document.getElementById('clientCardsGrid');
+            const emptyState = document.getElementById('emptyState');
+            const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
+            const sortBy = document.getElementById('sortBy').value;
+
+            renderWeeklyReminders();
+            updateFilterCounts();
+
+            let filtered = clients.filter(c => {
+                const matchesSearch = c.name.toLowerCase().includes(searchVal) || (c.notes && c.notes.toLowerCase().includes(searchVal));
+                if (!matchesSearch) return false;
+
+                if (activeFilter === 'DA_PAGARE') return c.status === 'DA_PAGARE' || c.status === 'IN_RITARDO';
+                if (activeFilter === 'ATTESA_2A') return c.status === 'ATTESA_2A';
+                if (activeFilter === 'PAGATO') return c.status === 'PAGATO';
+                if (activeFilter === 'OGNI_2') return c.frequency.includes('Ogni 2');
+                if (activeFilter === 'OGNI_4') return c.frequency.includes('Ogni 4') || c.frequency.includes('Mensile');
+
+                return true;
+            });
+
+            filtered.sort((a, b) => {
+                if (sortBy === 'name') return a.name.localeCompare(b.name);
+                if (sortBy === 'priceDesc') return b.price - a.price;
+                if (sortBy === 'priceAsc') return a.price - b.price;
+                if (sortBy === 'dateDesc') return (b.lastService || '').localeCompare(a.lastService || '');
+                if (sortBy === 'nextPay') {
+                    const fa = getClientPaymentForecast(a);
+                    const fb = getClientPaymentForecast(b);
+                    const ta = fa.targetMonday ? fa.targetMonday.getTime() : Number.MAX_SAFE_INTEGER;
+                    const tb = fb.targetMonday ? fb.targetMonday.getTime() : Number.MAX_SAFE_INTEGER;
+                    return ta - tb;
+                }
+                if (sortBy === 'status') {
+                    const order = { 'IN_RITARDO': 1, 'DA_PAGARE': 2, 'ATTESA_2A': 3, 'PAGATO': 4 };
+                    return (order[a.status] || 5) - (order[b.status] || 5);
+                }
+                return 0;
+            });
+
+            calculateKpis();
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            let html = '';
+            filtered.forEach(client => {
+                let statusBadge = '';
+                let cardBorder = 'border-slate-200/80 hover:border-sky-300';
+                const forecast = getClientPaymentForecast(client);
+
+                if (client.status === 'IN_RITARDO') {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-rose-100 text-rose-800 border border-rose-300"><i class="fa-solid fa-clock mr-1"></i> IN RITARDO (€${client.price})</span>`;
+                    cardBorder = 'border-rose-300 bg-rose-50/20';
+                } else if (client.status === 'DA_PAGARE') {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300"><i class="fa-solid fa-triangle-exclamation mr-1"></i> DA INCASSARE (€${client.price})</span>`;
+                    cardBorder = 'border-amber-300 bg-amber-50/20 shadow-amber-100/50';
+                } else if (client.status === 'ATTESA_2A') {
+                    const done = Number(client.servicesDone) || 1;
+                    if (client.frequency.includes('Ogni 4')) {
+                        statusBadge = `<span class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-100 text-indigo-800 border border-indigo-200"><i class="fa-solid fa-hourglass-half mr-1"></i> ${done}ª/4 FATTA (-${4 - done} al pagam.)</span>`;
+                    } else {
+                        statusBadge = `<span class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-100 text-indigo-800 border border-indigo-200"><i class="fa-solid fa-hourglass-half mr-1"></i> 1ª FATTA - MANCA 2ª</span>`;
+                    }
+                    cardBorder = 'border-indigo-200 bg-indigo-50/10';
+                } else {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-lg text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200"><i class="fa-solid fa-check mr-1"></i> SALDATO</span>`;
+                }
+
+                let serviceBtnText = '+ Prestazione';
+                let serviceBtnColor = 'bg-sky-600 hover:bg-sky-700';
+
+                if (client.frequency.includes('Ogni 2')) {
+                    if (client.status === 'ATTESA_2A') {
+                        serviceBtnText = '+ 2ª Prestazione';
+                        serviceBtnColor = 'bg-indigo-600 hover:bg-indigo-700';
+                    } else {
+                        serviceBtnText = '+ 1ª Prestazione';
+                    }
+                } else if (client.frequency.includes('Ogni 4')) {
+                    const nextNum = ((Number(client.servicesDone) || 0) % 4) + 1;
+                    serviceBtnText = `+ ${nextNum}ª/4 Prestaz.`;
+                    if (nextNum === 4) serviceBtnColor = 'bg-indigo-600 hover:bg-indigo-700';
+                }
+
+                let forecastLabel = '';
+                if (forecast.targetMonday) {
+                    const weekText = forecast.weeksRemaining === 0
+                        ? 'Questa settimana'
+                        : (forecast.weeksRemaining === 1 ? 'Settimana prossima' : `Tra ${forecast.weeksRemaining} sett. (dal ${formatShortDate(forecast.targetMonday)})`);
+                    const pillColor = forecast.weeksRemaining === 0 ? 'text-amber-700 bg-amber-50 border-amber-200' : 'text-sky-700 bg-sky-50 border-sky-200';
+                    forecastLabel = `
+                        <div class="mt-2 flex items-center justify-between text-[11px] px-2.5 py-1 rounded-lg border ${pillColor}">
+                            <span><i class="fa-solid fa-calendar-week mr-1"></i>Incasso: <b>${weekText}</b></span>
+                            <button onclick="skipClientWeek(${client.id})" class="font-bold underline hover:opacity-80 ml-2" title="Salta questa settimana">+1 sett</button>
+                        </div>
+                    `;
+                }
+
+                html += `
+                <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border ${cardBorder} transition hover:shadow-md flex flex-col justify-between space-y-3">
+                    <div>
+                        <div class="flex items-start justify-between gap-2">
+                            <div>
+                                <h3 class="font-bold text-slate-900 text-base leading-snug">${escapeHtml(client.name)}</h3>
+                                <p class="text-xs text-slate-500 font-medium flex items-center gap-1 mt-0.5">
+                                    <i class="fa-solid fa-repeat text-slate-400 text-[10px]"></i> ${escapeHtml(client.frequency)}
+                                </p>
+                            </div>
+                            <div class="text-right flex-shrink-0">
+                                <span class="text-lg font-extrabold text-slate-900">€${client.price}</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-3 flex items-center justify-between gap-1">
+                            ${statusBadge}
+                            <button onclick="sendWhatsApp(${client.id})" title="Invia promemoria WhatsApp" class="text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded-lg text-xs font-medium transition flex items-center gap-1">
+                                <i class="fa-brands fa-whatsapp text-sm"></i> <span class="hidden sm:inline">WhatsApp</span>
+                            </button>
+                        </div>
+
+                        ${forecastLabel}
+
+                        <div class="mt-3 pt-3 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
+                            <div>
+                                <span class="text-slate-400 block text-[10px] uppercase font-semibold">Ultimo Lavaggio</span>
+                                <span class="font-medium text-slate-700"><i class="fa-solid fa-calendar-day text-sky-500 mr-1"></i>${formatDate(client.lastService)}</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block text-[10px] uppercase font-semibold">Ultimo Incasso</span>
+                                <span class="font-medium text-slate-700"><i class="fa-solid fa-money-bill-wave text-emerald-500 mr-1"></i>${formatDate(client.lastPayment)}</span>
+                            </div>
+                        </div>
+
+                        ${client.notes ? `
+                        <div class="mt-2 text-xs bg-amber-50/80 text-amber-800 p-2 rounded-xl border border-amber-200/60 font-medium flex items-start gap-1.5">
+                            <i class="fa-solid fa-note-sticky text-amber-500 mt-0.5"></i>
+                            <span>${escapeHtml(client.notes)}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="pt-2 flex items-center gap-2">
+                        <button onclick="registerIntervention(${client.id})" class="flex-1 ${serviceBtnColor} text-white font-medium text-xs py-2 px-3 rounded-xl transition shadow-sm active:scale-95 flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-spray-can"></i> ${serviceBtnText}
+                        </button>
+                        
+                        <button onclick="registerPayment(${client.id})" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs py-2 px-3 rounded-xl transition shadow-sm active:scale-95 flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-hand-holding-dollar"></i> Incassa
+                        </button>
+
+                        <button onclick="openEditModal(${client.id})" title="Modifica scheda" class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                    </div>
+                </div>
+                `;
+            });
+
+            grid.innerHTML = html;
+        }
+
+        function calculateKpis() {
+            let totalVal = 0;
+            let pendingVal = 0;
+            let paidVal = 0;
+            let pendingCount = 0;
+            let paidCount = 0;
+            let waitingCount = 0;
+
+            clients.forEach(c => {
+                totalVal += Number(c.price) || 0;
+                if (c.status === 'DA_PAGARE' || c.status === 'IN_RITARDO') {
+                    pendingVal += Number(c.price) || 0;
+                    pendingCount++;
+                } else if (c.status === 'PAGATO') {
+                    paidVal += Number(c.price) || 0;
+                    paidCount++;
+                } else if (c.status === 'ATTESA_2A') {
+                    waitingCount++;
+                }
+            });
+
+            document.getElementById('kpi-total-price').innerText = `€ ${totalVal}`;
+            document.getElementById('kpi-total-clients').innerText = `${clients.length} clienti registrati`;
+
+            document.getElementById('kpi-pending-amount').innerText = `€ ${pendingVal}`;
+            document.getElementById('kpi-pending-count').innerText = `${pendingCount} da incassare`;
+
+            document.getElementById('kpi-paid-amount').innerText = `€ ${paidVal}`;
+            document.getElementById('kpi-paid-count').innerText = `${paidCount} saldati`;
+
+            document.getElementById('kpi-waiting-count').innerText = `${waitingCount}`;
+        }
+
+        function updateFilterCounts() {
+            document.getElementById('cnt-ALL').innerText = clients.length;
+            document.getElementById('cnt-DA_PAGARE').innerText = clients.filter(c => c.status === 'DA_PAGARE' || c.status === 'IN_RITARDO').length;
+            document.getElementById('cnt-ATTESA_2A').innerText = clients.filter(c => c.status === 'ATTESA_2A').length;
+            document.getElementById('cnt-PAGATO').innerText = clients.filter(c => c.status === 'PAGATO').length;
+            document.getElementById('cnt-OGNI_2').innerText = clients.filter(c => c.frequency.includes('Ogni 2')).length;
+            document.getElementById('cnt-OGNI_4').innerText = clients.filter(c => c.frequency.includes('Ogni 4') || c.frequency.includes('Mensile')).length;
+        }
+
+        function setFilter(filterType) {
+            activeFilter = filterType;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.className = 'filter-btn px-3.5 py-1.5 rounded-xl font-medium transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200';
+            });
+            const activeBtn = document.getElementById(`filter-${filterType}`);
+            if (activeBtn) {
+                activeBtn.className = 'filter-btn active px-3.5 py-1.5 rounded-xl font-medium transition whitespace-nowrap bg-sky-600 text-white shadow-sm';
+            }
+            renderClients();
+        }
+
+        function handleSearch() {
+            renderClients();
+        }
+
+        function registerIntervention(clientId) {
+            const client = clients.find(c => c.id === clientId);
+            if (!client) return;
+
+            const todayStr = getTodayISO();
+            client.lastService = todayStr;
+            client.skipWeeks = 0;
+
+            if (client.frequency.includes('Ogni 2')) {
+                if (client.status === 'ATTESA_2A' || (Number(client.servicesDone) || 0) >= 1) {
+                    client.status = 'DA_PAGARE';
+                    client.servicesDone = 2;
+                    showToast(`2ª prestazione fatta per <b>${escapeHtml(client.name)}</b>! Stato: <b>DA PAGARE</b> (€${client.price}).`, 'amber');
+                } else {
+                    client.status = 'ATTESA_2A';
+                    client.servicesDone = 1;
+                    showToast(`1ª prestazione fatta per <b>${escapeHtml(client.name)}</b>. Prossima tra 2 settimane.`, 'info');
+                }
+            } else if (client.frequency.includes('Ogni 4')) {
+                const nextCount = (Number(client.servicesDone) || 0) + 1;
+                if (nextCount >= 4) {
+                    client.status = 'DA_PAGARE';
+                    client.servicesDone = 4;
+                    showToast(`4ª prestazione fatta per <b>${escapeHtml(client.name)}</b>! Stato: <b>DA PAGARE</b> (€${client.price}).`, 'amber');
+                } else {
+                    client.status = 'ATTESA_2A';
+                    client.servicesDone = nextCount;
+                    showToast(`${nextCount}ª/4 prestazione registrata per <b>${escapeHtml(client.name)}</b>.`, 'info');
+                }
+            } else {
+                client.status = 'DA_PAGARE';
+                client.servicesDone = 1;
+                showToast(`Intervento registrato per <b>${escapeHtml(client.name)}</b>! In attesa di incasso.`, 'amber');
+            }
+
+            saveToLocalStorage();
+            syncClientToCloud(client);
+            renderClients();
+        }
+
+        function registerPayment(clientId) {
+            const client = clients.find(c => c.id === clientId);
+            if (!client) return;
+
+            const todayStr = getTodayISO();
+            client.lastPayment = todayStr;
+            client.status = 'PAGATO';
+            client.servicesDone = 0;
+            client.skipWeeks = 0;
+            client.notes = '';
+
+            saveToLocalStorage();
+            syncClientToCloud(client);
+            renderClients();
+            showToast(`Incasso di <b>€${client.price}</b> da <b>${escapeHtml(client.name)}</b> registrato e note cancellate!`, 'emerald');
+        }
+
+        function sendWhatsApp(clientId) {
+            const client = clients.find(c => c.id === clientId);
+            if (!client) return;
+
+            let msg = `Ciao ${client.name}, ti contattiamo da VetriClean Pro per la pulizia delle vetrate. `;
+            if (client.status === 'DA_PAGARE' || client.status === 'IN_RITARDO') {
+                msg += `Ti ricordiamo che il totale da saldare è di €${client.price}. `;
+                if (client.notes) msg += `(${client.notes}) `;
+                msg += `Grazie e buona giornata!`;
+            } else {
+                msg += `L'ultimo intervento risulta registrato in data ${formatDate(client.lastService)}. Grazie!`;
+            }
+
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        function openAddModal() {
+            document.getElementById('modalTitle').innerHTML = '<i class="fa-solid fa-shop text-sky-400"></i> Nuovo Cliente';
+            document.getElementById('clientId').value = '';
+            document.getElementById('clientName').value = '';
+            document.getElementById('clientPrice').value = '';
+            document.getElementById('clientFrequency').value = 'Ogni 2 prestazioni';
+            document.getElementById('clientStatus').value = 'PAGATO';
+            document.getElementById('clientServicesDone').value = '0';
+            document.getElementById('clientLastService').value = getTodayISO();
+            document.getElementById('clientLastPayment').value = getTodayISO();
+            document.getElementById('clientNotes').value = '';
+            document.getElementById('deleteClientBtn').classList.add('hidden');
+
+            showModal('clientModal', 'modalContainer');
+        }
+
+        function openEditModal(clientId) {
+            const client = clients.find(c => c.id === clientId);
+            if (!client) return;
+
+            document.getElementById('modalTitle').innerHTML = '<i class="fa-solid fa-pen-to-square text-sky-400"></i> Scheda Cliente';
+            document.getElementById('clientId').value = client.id;
+            document.getElementById('clientName').value = client.name || '';
+            document.getElementById('clientPrice').value = client.price || 0;
+            document.getElementById('clientFrequency').value = client.frequency || 'Ogni 2 prestazioni';
+            document.getElementById('clientStatus').value = client.status || 'PAGATO';
+            document.getElementById('clientServicesDone').value = String(client.servicesDone || 0);
+            document.getElementById('clientLastService').value = client.lastService || '';
+            document.getElementById('clientLastPayment').value = client.lastPayment || '';
+            document.getElementById('clientNotes').value = client.notes || '';
+            document.getElementById('deleteClientBtn').classList.remove('hidden');
+
+            showModal('clientModal', 'modalContainer');
+        }
+
+        function onModalStatusChange() {
+            const status = document.getElementById('clientStatus').value;
+            const freq = document.getElementById('clientFrequency').value;
+            const servicesSel = document.getElementById('clientServicesDone');
+            if (status === 'PAGATO') {
+                servicesSel.value = '0';
+            } else if (status === 'DA_PAGARE' || status === 'IN_RITARDO') {
+                servicesSel.value = freq.includes('Ogni 4') ? '4' : (freq.includes('Ogni 2') ? '2' : '1');
+            } else if (status === 'ATTESA_2A' && servicesSel.value === '0') {
+                servicesSel.value = '1';
+            }
+        }
+
+        function onModalFrequencyChange() {
+            onModalStatusChange();
+        }
+
+        function showModal(modalId, containerId) {
+            const modal = document.getElementById(modalId);
+            const container = document.getElementById(containerId);
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                container.classList.remove('scale-95');
+                container.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeClientModal() {
+            const modal = document.getElementById('clientModal');
+            const container = document.getElementById('modalContainer');
+            modal.classList.add('opacity-0');
+            container.classList.remove('scale-100');
+            container.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 200);
+        }
+
+        function saveClient(event) {
+            event.preventDefault();
+            const idVal = document.getElementById('clientId').value;
+
+            const name = document.getElementById('clientName').value.trim();
+            const price = Number(document.getElementById('clientPrice').value);
+            const frequency = document.getElementById('clientFrequency').value;
+            const status = document.getElementById('clientStatus').value;
+            const servicesDone = Number(document.getElementById('clientServicesDone').value) || 0;
+            const lastService = document.getElementById('clientLastService').value;
+            const lastPayment = document.getElementById('clientLastPayment').value;
+            const notes = document.getElementById('clientNotes').value.trim();
+
+            let targetClient = null;
+
+            if (idVal) {
+                const index = clients.findIndex(c => c.id === Number(idVal));
+                if (index !== -1) {
+                    clients[index] = { ...clients[index], name, price, frequency, status, servicesDone, lastService, lastPayment, notes, skipWeeks: 0 };
+                    targetClient = clients[index];
+                    showToast(`Scheda di <b>${escapeHtml(name)}</b> aggiornata!`, 'emerald');
+                }
+            } else {
+                const newId = clients.length ? Math.max(...clients.map(c => c.id)) + 1 : 1;
+                targetClient = { id: newId, name, price, frequency, status, servicesDone, lastService, lastPayment, notes, skipWeeks: 0 };
+                clients.push(targetClient);
+                showToast(`Nuovo cliente <b>${escapeHtml(name)}</b> creato!`, 'emerald');
+            }
+
+            saveToLocalStorage();
+            if (targetClient) syncClientToCloud(targetClient);
+            closeClientModal();
+            renderClients();
+        }
+
+        function askDeleteConfirmation() {
+            const idVal = document.getElementById('clientId').value;
+            if (!idVal) return;
+            const client = clients.find(c => c.id === Number(idVal));
+            if (!client) return;
+
+            openConfirmModal({
+                title: 'Elimina Cliente',
+                message: `Vuoi eliminare definitivamente <b>${escapeHtml(client.name)}</b>?`,
+                actionText: 'Elimina',
+                onConfirm: async () => {
+                    clients = clients.filter(c => c.id !== Number(idVal));
+                    saveToLocalStorage();
+                    await removeClientFromCloud(Number(idVal));
+                    closeClientModal();
+                    renderClients();
+                    showToast(`Cliente <b>${escapeHtml(client.name)}</b> eliminato.`, 'rose');
+                }
+            });
+        }
+
+        function askResetConfirmation() {
+            openConfirmModal({
+                title: 'Ripristina Dati Aggiornati',
+                message: 'Vuoi ripristinare i dati aggiornati dagli screenshot? Eventuali modifiche manuali successive verranno sovrascritte.',
+                actionText: 'Ripristina',
+                onConfirm: async () => {
+                    clients = JSON.parse(JSON.stringify(INITIAL_NUMBERS_DATA));
+                    localStorage.setItem('vetriclean_data_version', DATA_VERSION);
+                    saveToLocalStorage();
+                    for (const item of clients) {
+                        await syncClientToCloud(item);
+                    }
+                    renderClients();
+                    showToast("Dati aggiornati ripristinati con successo!", "info");
+                }
+            });
+        }
+
+        function openConfirmModal({ title, message, actionText, onConfirm }) {
+            document.getElementById('confirmModalTitle').innerHTML = title;
+            document.getElementById('confirmModalText').innerHTML = message;
+            const btn = document.getElementById('confirmModalActionBtn');
+            btn.innerText = actionText;
+
+            pendingConfirmAction = onConfirm;
+
+            btn.onclick = () => {
+                if (pendingConfirmAction) pendingConfirmAction();
+                closeConfirmModal();
+            };
+
+            showModal('confirmModal', 'confirmModalContainer');
+        }
+
+        function closeConfirmModal() {
+            const modal = document.getElementById('confirmModal');
+            const container = document.getElementById('confirmModalContainer');
+            modal.classList.add('opacity-0');
+            container.classList.remove('scale-100');
+            container.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 200);
+        }
+
+        // BACKUP CSV COMPATIBILE CON iOS / SAFARI / DOCUMENTS E DESKTOP
+        async function exportData() {
+            let csvContent = "\uFEFFID,Cliente,Prezzo,Frequenza,Prestazioni Ciclo,Ultima Prestazione,Ultimo Pagamento,Stato,Note\n";
+            clients.forEach(c => {
+                const row = [
+                    c.id,
+                    `"${(c.name || '').replace(/"/g, '""')}"`,
+                    c.price,
+                    `"${(c.frequency || '').replace(/"/g, '""')}"`,
+                    c.servicesDone || 0,
+                    c.lastService || '',
+                    c.lastPayment || '',
+                    c.status,
+                    `"${(c.notes || '').replace(/"/g, '""')}"`
+                ].join(",");
+                csvContent += row + "\n";
+            });
+
+            const today = getTodayISO();
+            const fileName = `vetriclean_backup_${today}.csv`;
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+            // 1. Metodo nativo iOS / Mobile (Menu Condividi -> Salva su File / Documents / WhatsApp)
+            try {
+                const file = new File([blob], fileName, { type: 'text/csv' });
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Backup VetriClean Pro'
+                    });
+                    showToast("Menu salvataggio aperto!", "emerald");
+                    return;
+                }
+            } catch (err) {
+                if (err.name === 'AbortError') return;
+            }
+
+            // 2. Fallback Desktop / Browser standard
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            showToast("Backup CSV scaricato!", "emerald");
+        }
+
+        function loadFromLocalStorage() {
+            const savedVersion = localStorage.getItem('vetriclean_data_version');
+            const savedData = localStorage.getItem('vetriclean_clients');
+
+            if (savedData && savedVersion === DATA_VERSION) {
+                try {
+                    clients = JSON.parse(savedData);
+                } catch(e) {
+                    clients = JSON.parse(JSON.stringify(INITIAL_NUMBERS_DATA));
+                }
+            } else {
+                clients = JSON.parse(JSON.stringify(INITIAL_NUMBERS_DATA));
+                localStorage.setItem('vetriclean_data_version', DATA_VERSION);
+                saveToLocalStorage();
+            }
+            renderClients();
+            return clients;
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('vetriclean_clients', JSON.stringify(clients));
+        }
+
+        async function initCloudSync() {
+            let rawConfig = null;
+            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                rawConfig = __firebase_config;
+            } else {
+                rawConfig = localStorage.getItem('vetriclean_firebase_config');
+            }
+
+            if (!rawConfig) {
+                updateCloudBadge('offline', 'Uso Locale (Tocca per Cloud)');
+                loadFromLocalStorage();
+                return;
+            }
+
+            try {
+                const firebaseConfig = typeof rawConfig === 'string' ? JSON.parse(rawConfig) : rawConfig;
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                updateCloudBadge('syncing', 'Autenticazione...');
+
+                const customToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                if (customToken) {
+                    await signInWithCustomToken(auth, customToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                if (!auth.currentUser) {
+                    throw new Error("Autenticazione fallita");
+                }
+
+                updateCloudBadge('syncing', 'Sincronizzazione...');
+
+                const clientsCollRef = collection(db, 'artifacts', appId, 'public', 'data', 'clients');
+
+                onSnapshot(clientsCollRef, async (snapshot) => {
+                    if (snapshot.empty) {
+                        updateCloudBadge('syncing', 'Inizializzazione...');
+                        const initialData = loadFromLocalStorage();
+                        for (const item of initialData) {
+                            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'clients', String(item.id)), item);
+                        }
+                    } else {
+                        const cloudClients = [];
+                        snapshot.forEach((docSnap) => {
+                            cloudClients.push(docSnap.data());
+                        });
+                        clients = cloudClients;
+                        saveToLocalStorage();
+                        renderClients();
+                    }
+                    isCloudActive = true;
+                    updateCloudBadge('online', 'Cloud Sincronizzato');
+                }, (error) => {
+                    console.error("Firestore error:", error);
+                    updateCloudBadge('offline', 'Uso Locale (Tocca per Cloud)');
+                    loadFromLocalStorage();
+                });
+
+            } catch (err) {
+                console.error("Cloud connection failed:", err);
+                updateCloudBadge('offline', 'Uso Locale (Tocca per Cloud)');
+                loadFromLocalStorage();
+            }
+        }
+
+        function openCloudModal() {
+            const saved = localStorage.getItem('vetriclean_firebase_config') || '';
+            document.getElementById('firebaseConfigInput').value = saved;
+            showModal('cloudModal', 'cloudModalContainer');
+        }
+
+        function closeCloudModal() {
+            const modal = document.getElementById('cloudModal');
+            const container = document.getElementById('cloudModalContainer');
+            modal.classList.add('opacity-0');
+            container.classList.remove('scale-100');
+            container.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 200);
+        }
+
+        function saveCloudConfig() {
+            const val = document.getElementById('firebaseConfigInput').value.trim();
+            if (!val) {
+                showToast("Inserisci un codice di configurazione valido.", "amber");
+                return;
+            }
+            try {
+                JSON.parse(val);
+                localStorage.setItem('vetriclean_firebase_config', val);
+                closeCloudModal();
+                showToast("Configurazione Cloud salvata! Sincronizzazione in corso...", "emerald");
+                initCloudSync();
+            } catch(e) {
+                showToast("Formato JSON non valido. Controlla il testo inserito.", "rose");
+            }
+        }
+
+        function resetCloudConfig() {
+            localStorage.removeItem('vetriclean_firebase_config');
+            isCloudActive = false;
+            closeCloudModal();
+            updateCloudBadge('offline', 'Uso Locale (Tocca per Cloud)');
+            showToast("Cloud disattivato. L'app funziona in locale.", "info");
+        }
+
+        function updateCloudBadge(state, labelText) {
+            const dot = document.getElementById('cloudDot');
+            const txt = document.getElementById('cloudStatusText');
+            if (!dot || !txt) return;
+
+            txt.innerText = labelText;
+
+            if (state === 'online') {
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-sm';
+            } else if (state === 'syncing') {
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping';
+            } else {
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-slate-400';
+            }
+        }
+
+        async function syncClientToCloud(client) {
+            if (!isCloudActive || !db || !auth?.currentUser) return;
+            try {
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'clients', String(client.id)), client);
+            } catch (err) {
+                console.error("Cloud save error:", err);
+            }
+        }
+
+        async function removeClientFromCloud(clientId) {
+            if (!isCloudActive || !db || !auth?.currentUser) return;
+            try {
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'clients', String(clientId)));
+            } catch (err) {
+                console.error("Cloud delete error:", err);
+            }
+        }
+
+        // Global function exports for HTML events
+        window.setFilter = setFilter;
+        window.renderClients = renderClients;
+        window.registerIntervention = registerIntervention;
+        window.registerPayment = registerPayment;
+        window.sendWhatsApp = sendWhatsApp;
+        window.handleSearch = handleSearch;
+        window.openAddModal = openAddModal;
+        window.openEditModal = openEditModal;
+        window.onModalStatusChange = onModalStatusChange;
+        window.onModalFrequencyChange = onModalFrequencyChange;
+        window.closeClientModal = closeClientModal;
+        window.saveClient = saveClient;
+        window.askDeleteConfirmation = askDeleteConfirmation;
+        window.askResetConfirmation = askResetConfirmation;
+        window.closeConfirmModal = closeConfirmModal;
+        window.exportData = exportData;
+        window.openCloudModal = openCloudModal;
+        window.closeCloudModal = closeCloudModal;
+        window.saveCloudConfig = saveCloudConfig;
+        window.resetCloudConfig = resetCloudConfig;
+        window.changeReminderWeek = changeReminderWeek;
+        window.resetReminderWeek = resetReminderWeek;
+        window.skipClientWeek = skipClientWeek;
+
+        // QUICK DAILY REGISTRATION LOGIC
+        function openQuickDailyModal() {
+            const select = document.getElementById('quickClientSelect');
+            select.innerHTML = '';
+
+            const sorted = [...clients].sort((a,b) => a.name.localeCompare(b.name));
+            
+            sorted.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.id;
+                opt.textContent = `${c.name} (€${c.price}) - [${c.status}]`;
+                select.appendChild(opt);
+            });
+
+            document.getElementById('quickDate').value = getTodayISO();
+            document.getElementById('quickWorkDone').checked = true;
+            document.getElementById('quickPaid').checked = true;
+            document.getElementById('quickNotes').value = '';
+
+            if (sorted.length > 0) {
+                select.value = sorted[0].id;
+                onQuickClientChange();
+            }
+
+            renderBatchList();
+            switchQuickTab('single');
+            showModal('quickDailyModal', 'quickModalContainer');
+        }
+
+        function closeQuickDailyModal() {
+            const modal = document.getElementById('quickDailyModal');
+            const container = document.getElementById('quickModalContainer');
+            modal.classList.add('opacity-0');
+            container.classList.remove('scale-100');
+            container.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 200);
+        }
+
+        function onQuickClientChange() {
+            const select = document.getElementById('quickClientSelect');
+            const clientId = Number(select.value);
+            const client = clients.find(c => c.id === clientId);
+            if (client) {
+                document.getElementById('quickPrice').value = client.price || 0;
+            }
+        }
+
+        function switchQuickTab(tab) {
+            const singleBtn = document.getElementById('quickTabSingleBtn');
+            const batchBtn = document.getElementById('quickTabBatchBtn');
+            const singleForm = document.getElementById('quickSingleForm');
+            const batchSec = document.getElementById('quickBatchSection');
+
+            if (tab === 'single') {
+                singleBtn.className = "flex-1 py-2 text-xs font-bold rounded-xl bg-white text-slate-800 shadow-sm transition flex items-center justify-center gap-1.5";
+                batchBtn.className = "flex-1 py-2 text-xs font-bold rounded-xl text-slate-500 hover:text-slate-800 transition flex items-center justify-center gap-1.5";
+                singleForm.classList.remove('hidden');
+                batchSec.classList.add('hidden');
+            } else {
+                batchBtn.className = "flex-1 py-2 text-xs font-bold rounded-xl bg-white text-slate-800 shadow-sm transition flex items-center justify-center gap-1.5";
+                singleBtn.className = "flex-1 py-2 text-xs font-bold rounded-xl text-slate-500 hover:text-slate-800 transition flex items-center justify-center gap-1.5";
+                singleForm.classList.add('hidden');
+                batchSec.classList.remove('hidden');
+            }
+        }
+
+        function saveQuickDaily(e) {
+            e.preventDefault();
+            const clientId = Number(document.getElementById('quickClientSelect').value);
+            const client = clients.find(c => c.id === clientId);
+            if (!client) return;
+
+            const isWorkDone = document.getElementById('quickWorkDone').checked;
+            const isPaid = document.getElementById('quickPaid').checked;
+            const customDate = document.getElementById('quickDate').value || getTodayISO();
+            const customPrice = Number(document.getElementById('quickPrice').value);
+            const customNotes = document.getElementById('quickNotes').value.trim();
+
+            if (!isWorkDone && !isPaid) {
+                showToast("Seleziona almeno 'Lavaggio eseguito' o 'Pagamento incassato'.", "amber");
+                return;
+            }
+
+            if (customPrice > 0) client.price = customPrice;
+            if (customNotes) client.notes = customNotes;
+            client.skipWeeks = 0;
+
+            if (isWorkDone) {
+                client.lastService = customDate;
+                if (client.frequency.includes('Ogni 2')) {
+                    if (client.status === 'ATTESA_2A' || (Number(client.servicesDone) || 0) >= 1) {
+                        client.status = 'DA_PAGARE';
+                        client.servicesDone = 2;
+                    } else {
+                        client.status = 'ATTESA_2A';
+                        client.servicesDone = 1;
+                    }
+                } else if (client.frequency.includes('Ogni 4')) {
+                    const nextC = (Number(client.servicesDone) || 0) + 1;
+                    client.servicesDone = nextC;
+                    client.status = nextC >= 4 ? 'DA_PAGARE' : 'ATTESA_2A';
+                } else {
+                    client.status = 'DA_PAGARE';
+                    client.servicesDone = 1;
+                }
+            }
+
+            if (isPaid) {
+                client.lastPayment = customDate;
+                client.status = 'PAGATO';
+                client.servicesDone = 0;
+                if (!customNotes) client.notes = '';
+            }
+
+            saveToLocalStorage();
+            syncClientToCloud(client);
+            closeQuickDailyModal();
+            renderClients();
+            showToast(`Registrato per <b>${escapeHtml(client.name)}</b>!`, 'emerald');
+        }
+
+        function renderBatchList() {
+            const container = document.getElementById('batchClientsList');
+            const sorted = [...clients].sort((a,b) => a.name.localeCompare(b.name));
+
+            let html = '';
+            sorted.forEach(c => {
+                html += `
+                <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-200 hover:bg-white transition">
+                    <div class="flex-1 pr-2">
+                        <span class="font-bold text-xs text-slate-800 block">${escapeHtml(c.name)}</span>
+                        <span class="text-[10px] text-slate-500">€${c.price} • ${c.frequency}</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <label class="flex items-center gap-1 cursor-pointer bg-sky-50 px-2 py-1 rounded-lg border border-sky-200 text-[11px] font-semibold text-sky-800">
+                            <input type="checkbox" data-batch-work="${c.id}" class="w-3.5 h-3.5 text-sky-600 rounded">
+                            <span>Lavato</span>
+                        </label>
+                        <label class="flex items-center gap-1 cursor-pointer bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-200 text-[11px] font-semibold text-emerald-800">
+                            <input type="checkbox" data-batch-pay="${c.id}" class="w-3.5 h-3.5 text-emerald-600 rounded">
+                            <span>Incassato</span>
+                        </label>
+                    </div>
+                </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function applyBatchQuickDaily() {
+            const todayStr = getTodayISO();
+            let updatedCount = 0;
+
+            clients.forEach(c => {
+                const workCb = document.querySelector(`[data-batch-work="${c.id}"]`);
+                const payCb = document.querySelector(`[data-batch-pay="${c.id}"]`);
+
+                const workDone = workCb && workCb.checked;
+                const paidDone = payCb && payCb.checked;
+
+                if (workDone || paidDone) {
+                    updatedCount++;
+                    c.skipWeeks = 0;
+                    if (workDone) {
+                        c.lastService = todayStr;
+                        if (c.frequency.includes('Ogni 2')) {
+                            if (c.status === 'ATTESA_2A' || (Number(c.servicesDone) || 0) >= 1) {
+                                c.status = 'DA_PAGARE';
+                                c.servicesDone = 2;
+                            } else {
+                                c.status = 'ATTESA_2A';
+                                c.servicesDone = 1;
+                            }
+                        } else if (c.frequency.includes('Ogni 4')) {
+                            const nextC = (Number(c.servicesDone) || 0) + 1;
+                            c.servicesDone = nextC;
+                            c.status = nextC >= 4 ? 'DA_PAGARE' : 'ATTESA_2A';
+                        } else {
+                            c.status = 'DA_PAGARE';
+                            c.servicesDone = 1;
+                        }
+                    }
+                    if (paidDone) {
+                        c.lastPayment = todayStr;
+                        c.status = 'PAGATO';
+                        c.servicesDone = 0;
+                        c.notes = '';
+                    }
+                    syncClientToCloud(c);
+                }
+            });
+
+            if (updatedCount > 0) {
+                saveToLocalStorage();
+                renderClients();
+                closeQuickDailyModal();
+                showToast(`Aggiornati <b>${updatedCount}</b> clienti registrati oggi!`, 'emerald');
+            } else {
+                showToast("Nessuna spunta selezionata.", "amber");
+            }
+        }
+
+        window.openQuickDailyModal = openQuickDailyModal;
+        window.closeQuickDailyModal = closeQuickDailyModal;
+        window.onQuickClientChange = onQuickClientChange;
+        window.switchQuickTab = switchQuickTab;
+        window.saveQuickDaily = saveQuickDaily;
+        window.applyBatchQuickDaily = applyBatchQuickDaily;
+
+        // Init Cloud / Local
+        initCloudSync();
+
+        // Render crisp 180x180 PNG canvas icon for optimal iOS Safari compatibility
+        (function generateHighResAppleIcon() {
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = 180;
+                canvas.height = 180;
+                const ctx = canvas.getContext('2d');
+
+                const bgGrad = ctx.createLinearGradient(0, 0, 180, 180);
+                bgGrad.addColorStop(0, '#0f172a');
+                bgGrad.addColorStop(0.5, '#075985');
+                bgGrad.addColorStop(1, '#0284c7');
+                ctx.fillStyle = bgGrad;
+                ctx.fillRect(0, 0, 180, 180);
+
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+                ctx.lineWidth = 10;
+                ctx.lineCap = 'round';
+                ctx.beginPath();
+                ctx.moveTo(40, 140);
+                ctx.lineTo(140, 40);
+                ctx.stroke();
+
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 12;
+                ctx.beginPath();
+                ctx.moveTo(50, 68);
+                ctx.lineTo(130, 68);
+                ctx.stroke();
+
+                const handleGrad = ctx.createLinearGradient(0, 68, 180, 180);
+                handleGrad.addColorStop(0, '#38bdf8');
+                handleGrad.addColorStop(1, '#ffffff');
+                ctx.strokeStyle = handleGrad;
+                ctx.lineWidth = 9;
+                ctx.lineJoin = 'round';
+                ctx.beginPath();
+                ctx.moveTo(60, 68);
+                ctx.lineTo(82, 115);
+                ctx.quadraticCurveTo(90, 125, 98, 115);
+                ctx.lineTo(120, 68);
+                ctx.stroke();
+
+                ctx.fillStyle = '#38bdf8';
+                ctx.beginPath();
+                ctx.arc(135, 48, 6, 0, Math.PI * 2);
+                ctx.fill();
+
+                const pngUrl = canvas.toDataURL('image/png');
+                const appleIconTag = document.getElementById('appleTouchIcon');
+                if (appleIconTag) {
+                    appleIconTag.href = pngUrl;
+                }
+            } catch (e) {
+                console.log("Canvas icon generation fallback skipped", e);
+            }
+        })();
+    </script>
+</body>
+</html>
