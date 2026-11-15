@@ -74,23 +74,23 @@
                     </div>
                     <div>
                         <h1 class="font-bold text-lg leading-tight tracking-wide">VetriClean <span class="text-sky-300 font-normal">Pro</span></h1>
-                        <p class="text-[11px] text-sky-200">Gestionale Pulizia Vetrate</p>
+                        <p class="text-[11px] text-sky-200 hidden sm:block">Gestionale Pulizia Vetrate</p>
                     </div>
                 </div>
 
                 <!-- Action Buttons -->
-                <div class="flex items-center space-x-2">
-                    <button id="cloudStatusBadge" onclick="openCloudModal()" class="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-medium bg-white/10 hover:bg-white/20 border border-white/20 text-sky-100 shadow-inner transition cursor-pointer" title="Configura Sincronizzazione Cloud">
+                <div class="flex items-center space-x-1.5 sm:space-x-2">
+                    <button id="cloudStatusBadge" onclick="openCloudModal()" class="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-medium bg-white/10 hover:bg-white/20 border border-white/20 text-sky-100 shadow-inner transition cursor-pointer" title="Configura Sincronizzazione Cloud">
                         <span id="cloudDot" class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
-                        <span id="cloudStatusText" class="hidden sm:inline">Connessione Cloud...</span>
+                        <span id="cloudStatusText" class="hidden md:inline">Connessione Cloud...</span>
                     </button>
 
-                    <button onclick="openQuickDailyModal()" class="bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-medium text-xs sm:text-sm px-3.5 py-2 rounded-xl shadow-lg transition flex items-center gap-2" title="Registrazione Rapida Interventi e Incassi">
+                    <button onclick="openQuickDailyModal()" class="bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-medium text-xs sm:text-sm px-3 sm:px-3.5 py-2 rounded-xl shadow-lg transition flex items-center gap-2" title="Registrazione Rapida Interventi e Incassi">
                         <i class="fa-solid fa-bolt"></i>
                         <span class="hidden sm:inline">Registra Giornata</span>
                     </button>
 
-                    <button onclick="openAddModal()" class="bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-medium text-xs sm:text-sm px-3.5 py-2 rounded-xl shadow-lg transition flex items-center gap-2">
+                    <button onclick="openAddModal()" class="bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-medium text-xs sm:text-sm px-3 sm:px-3.5 py-2 rounded-xl shadow-lg transition flex items-center gap-2" title="Aggiungi Nuovo Cliente">
                         <i class="fa-solid fa-plus"></i>
                         <span class="hidden sm:inline">Nuovo Cliente</span>
                     </button>
@@ -98,6 +98,11 @@
                     <button onclick="exportData()" title="Esporta Backup CSV" class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-xl transition">
                         <i class="fa-solid fa-file-export"></i>
                     </button>
+
+                    <button onclick="triggerImportCSV()" title="Importa Backup CSV" class="bg-white/10 hover:bg-sky-500/80 text-white p-2 rounded-xl transition">
+                        <i class="fa-solid fa-file-import"></i>
+                    </button>
+                    <input type="file" id="csvFileInput" accept=".csv,text/csv" class="hidden" onchange="handleCSVFileSelected(event)">
 
                     <button onclick="askResetConfirmation()" title="Ripristina Dati Aggiornati" class="bg-white/10 hover:bg-rose-500/80 text-white p-2 rounded-xl transition">
                         <i class="fa-solid fa-rotate-left"></i>
@@ -1416,7 +1421,6 @@
             const fileName = `vetriclean_backup_${today}.csv`;
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
 
-            // 1. Metodo nativo iOS / Mobile (Menu Condividi -> Salva su File / Documents / WhatsApp)
             try {
                 const file = new File([blob], fileName, { type: 'text/csv' });
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -1431,7 +1435,6 @@
                 if (err.name === 'AbortError') return;
             }
 
-            // 2. Fallback Desktop / Browser standard
             const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
             link.href = url;
@@ -1441,6 +1444,152 @@
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
             showToast("Backup CSV scaricato!", "emerald");
+        }
+
+        // IMPORTAZIONE E RIPRISTINO DA FILE CSV
+        function triggerImportCSV() {
+            const input = document.getElementById('csvFileInput');
+            if (input) {
+                input.value = '';
+                input.click();
+            }
+        }
+
+        function parseCSVLine(line, delimiter = ',') {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (inQuotes) {
+                    if (char === '"' && line[i + 1] === '"') {
+                        current += '"';
+                        i++;
+                    } else if (char === '"') {
+                        inQuotes = false;
+                    } else {
+                        current += char;
+                    }
+                } else {
+                    if (char === '"') {
+                        inQuotes = true;
+                    } else if (char === delimiter) {
+                        result.push(current.trim());
+                        current = '';
+                    } else {
+                        current += char;
+                    }
+                }
+            }
+            result.push(current.trim());
+            return result;
+        }
+
+        function handleCSVFileSelected(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const rawText = e.target.result.replace(/^\uFEFF/, '');
+                    const lines = rawText.split(/\r?\n/).filter(l => l.trim().length > 0);
+                    if (lines.length < 2) {
+                        showToast("Il file CSV selezionato è vuoto o non valido.", "rose");
+                        return;
+                    }
+
+                    // Rileva automaticamente separatore virgola o punto e virgola (Excel italiano)
+                    const delimiter = (lines[0].split(';').length > lines[0].split(',').length) ? ';' : ',';
+                    const headerCols = parseCSVLine(lines[0], delimiter).map(h => h.toLowerCase());
+                    const hasCycleCol = headerCols.some(h => h.includes('ciclo') || h.includes('prestazioni ciclo'));
+
+                    const importedClients = [];
+                    for (let i = 1; i < lines.length; i++) {
+                        const cols = parseCSVLine(lines[i], delimiter);
+                        if (cols.length < 4) continue;
+
+                        const id = parseInt(cols[0], 10) || i;
+                        const name = cols[1] || `Cliente ${i}`;
+                        const price = Number(String(cols[2]).replace(',', '.')) || 0;
+                        const frequency = cols[3] || 'Ogni 2 prestazioni';
+
+                        let servicesDone = 0;
+                        let lastService = '';
+                        let lastPayment = '';
+                        let status = 'PAGATO';
+                        let notes = '';
+
+                        if (hasCycleCol && cols.length >= 8) {
+                            servicesDone = parseInt(cols[4], 10) || 0;
+                            lastService = cols[5] || '';
+                            lastPayment = cols[6] || '';
+                            status = cols[7] || 'PAGATO';
+                            notes = cols[8] || '';
+                        } else {
+                            lastService = cols[4] || '';
+                            lastPayment = cols[5] || '';
+                            status = cols[6] || 'PAGATO';
+                            notes = cols[7] || '';
+                            if (status === 'ATTESA_2A') servicesDone = 1;
+                            else if (status === 'DA_PAGARE' || status === 'IN_RITARDO') {
+                                servicesDone = frequency.includes('Ogni 4') ? 4 : (frequency.includes('Ogni 2') ? 2 : 1);
+                            }
+                        }
+
+                        const validStatuses = ['PAGATO', 'DA_PAGARE', 'ATTESA_2A', 'IN_RITARDO'];
+                        if (!validStatuses.includes(status)) status = 'PAGATO';
+
+                        importedClients.push({
+                            id,
+                            name,
+                            price,
+                            frequency,
+                            servicesDone,
+                            lastService,
+                            lastPayment,
+                            status,
+                            notes,
+                            skipWeeks: 0
+                        });
+                    }
+
+                    if (importedClients.length === 0) {
+                        showToast("Nessun cliente valido trovato nel file CSV.", "rose");
+                        return;
+                    }
+
+                    openConfirmModal({
+                        title: 'Importa Backup CSV',
+                        message: `Trovati <b>${importedClients.length} clienti</b> nel file <b>${escapeHtml(file.name)}</b>. Vuoi sostituire i dati attuali con quelli del backup?`,
+                        actionText: 'Importa Ora',
+                        onConfirm: async () => {
+                            const oldIds = clients.map(c => c.id);
+                            const newIds = new Set(importedClients.map(c => c.id));
+
+                            clients = importedClients;
+                            localStorage.setItem('vetriclean_data_version', DATA_VERSION);
+                            saveToLocalStorage();
+
+                            for (const oldId of oldIds) {
+                                if (!newIds.has(oldId)) {
+                                    await removeClientFromCloud(oldId);
+                                }
+                            }
+                            for (const item of clients) {
+                                await syncClientToCloud(item);
+                            }
+
+                            renderClients();
+                            showToast(`Ripristinati <b>${clients.length} clienti</b> dal backup CSV!`, "emerald");
+                        }
+                    });
+                } catch (err) {
+                    console.error("CSV import error:", err);
+                    showToast("Errore durante la lettura del file CSV.", "rose");
+                }
+            };
+            reader.readAsText(file, 'UTF-8');
         }
 
         function loadFromLocalStorage() {
@@ -1627,6 +1776,8 @@
         window.askResetConfirmation = askResetConfirmation;
         window.closeConfirmModal = closeConfirmModal;
         window.exportData = exportData;
+        window.triggerImportCSV = triggerImportCSV;
+        window.handleCSVFileSelected = handleCSVFileSelected;
         window.openCloudModal = openCloudModal;
         window.closeCloudModal = closeCloudModal;
         window.saveCloudConfig = saveCloudConfig;
